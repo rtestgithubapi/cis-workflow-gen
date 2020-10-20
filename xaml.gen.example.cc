@@ -1,6 +1,4 @@
-// #include <cis-workflow-gen/quick-include.hpp>
-#include "activity.hpp"
-#include "quick-include.hpp"
+#include <cis-workflow-gen/quick-include.hpp>
 
 auto simpleExample() {
     Activity SCS ("SCS", "FleetAGC.Activities.WriteTraceinfo", "PreRteg.InitiateBareMetalComplete");
