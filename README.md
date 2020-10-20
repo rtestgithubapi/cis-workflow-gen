@@ -1,6 +1,12 @@
 # Generate CIS workflow from an easy format
 
-## Build
+## Dependency
+
+Please install rlib: https://github.com/recolic/rlib
+
+You C++ compiler must at least support C++14. 
+
+## Install
 
 ```
 sudo make install
