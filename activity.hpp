@@ -76,7 +76,7 @@ namespace CIS {
             }
 
             xamlCode.replace("__TEMPLATE_ARG_TypeName", argType);
-            xamlCode.replace_once("__TEMPLATE_ARG_TypeValue", argValue);
+            xamlCode.replace_once("__TEMPLATE_ARG_TypeValue", Utility::HtmlEscapeString(argValue));
             xamlCode.replace_once("__TEMPLATE_ARG_ClassName", this->className);
             xamlCode.replace_once("__TEMPLATE_ARG_DisplayName", this->displayName);
             xamlCode.replace_once("__TEMPLATE_ARG_TaskId", this->taskId);
