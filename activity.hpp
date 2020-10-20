@@ -34,15 +34,12 @@ namespace CIS {
             inputSettings[k] = v;
         }
         void explicitSetRawArgument(string argTypeInXaml, string argValueInCSharp) {
-            explicitArgType = argTypeInXaml;
-            explicitArgValue = argValueInCSharp;
+            throw std::runtime_error("NotSupported! Activity seems doesn't support custom type inputSettings at all. Refer to commit 7fd539d6d5f6b102337da9591217b781cb71ced9 if we get new info and want to support it again. ");
         }
     private:
         string displayName, className, entityName;
         string taskId;
         std::unordered_map<string, string> inputSettings;
-
-        string explicitArgType, explicitArgValue;
 
         auto inputSettingsToCodelines() const {
             // Convert InputSettings Dictionary to C# code. 
@@ -54,29 +51,19 @@ namespace CIS {
             return rlib::string(templates::ACTIVITY_DICT_TEMPLATE_UNESCAPED).replace_once("__TEMPLATE_ARG_DictLines", inputSettingsString);
         }
         auto generateXaml() const {
-            rlib::string xamlCode = templates::ACTIVITY_XAML_TEMPLATE;
+            rlib::string xamlCode;
 
-            string argType, argValue;
-            if(explicitArgType.empty() && explicitArgValue.empty()) {
-                // no explicit argument specified. 
-                if(inputSettings.empty()) {
-                    // Also no inputSettings. 
-                    xamlCode = templates::ACTIVITY_XAML_TEMPLATE_WITHOUT_INPUTSETTINGS;
-                }
-                else {
-                    // Generate inputSettings.
-                    argType = templates::ACTIVITY_DICT_TYPENAME;
-                    argValue = inputSettingsToCodelines();
-                }
+            if(inputSettings.empty()) {
+                // Also no inputSettings. 
+                xamlCode = templates::ACTIVITY_XAML_TEMPLATE_WITHOUT_INPUTSETTINGS;
             }
             else {
-                // Use explicit argument.
-                argType = explicitArgType;
-                argValue = explicitArgValue;
+                // Generate inputSettings.
+                xamlCode = templates::ACTIVITY_XAML_TEMPLATE;
+                xamlCode.replace("__TEMPLATE_ARG_TypeName", templates::ACTIVITY_DICT_TYPENAME);
+                xamlCode.replace_once("__TEMPLATE_ARG_TypeValue", Utility::HtmlEscapeString(inputSettingsToCodelines()));
             }
 
-            xamlCode.replace("__TEMPLATE_ARG_TypeName", argType);
-            xamlCode.replace_once("__TEMPLATE_ARG_TypeValue", Utility::HtmlEscapeString(argValue));
             xamlCode.replace_once("__TEMPLATE_ARG_ClassName", this->className);
             xamlCode.replace_once("__TEMPLATE_ARG_DisplayName", this->displayName);
             xamlCode.replace_once("__TEMPLATE_ARG_TaskId", this->taskId);

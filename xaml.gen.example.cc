@@ -32,8 +32,7 @@ auto complexExample() {
     DEFINE_ACTIVITY(TSConfigAndInterop, "PreRteg.InitiateBareMetalComplete")
 
     // All Names of activity should not contain quotation mark (")
-    Activity OneMoreMagicActivity("MyName Contains Symbols: {(<&>)}", "FleetAGC.Workflow.Magic");
-    OneMoreMagicActivity.explicitSetRawArgument("x:Boolean", "(0b_1100_1000 | 0b_1000_0001 == 201)");
+    Activity OneMoreMagicActivity("MyName Contains Symbols: {(&)} <>", "FleetAGC.Workflow.Magic");
 
     auto block1 = SCS >> (SearchAnalytics | (SearchFarms >> (ClassisSearchUX | ModernSearch)));
     auto block3 = Loki >> Yggdrasil >> OfficeGraph;

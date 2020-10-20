@@ -24,6 +24,7 @@ R"XAMLTL(    <mwcwa:ControlledActivity ClassName="__TEMPLATE_ARG_ClassName" Disp
     </mwcwa:ControlledActivity>
 )XAMLTL";
 
+// This 2 variable below were designed to support custom TypeArguments type, but CIS seems not support it...
 constexpr auto ACTIVITY_DICT_TYPENAME = "scg:Dictionary(x:String, x:String)";
 constexpr auto ACTIVITY_DICT_TEMPLATE_UNESCAPED = 
 R"XAMLTL(          new Dictionary<string, string>()
