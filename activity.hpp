@@ -80,26 +80,22 @@ namespace CIS {
         std::queue<rlib::string> queued;
 
         Flow binaryOperation(Flow seqNext, bool thisOperationIsSequential) const {
-            rlib::printfln("binOp begin, isSeq={}, queueSize={}", thisOperationIsSequential, queued.size());
             Flow result = *this;
             result.reduceQueuedIfNecessary(thisOperationIsSequential);
             seqNext.reduceQueuedIfNecessary(thisOperationIsSequential);
 
             result.prevOperationIsSequential = thisOperationIsSequential;
             result.queued.push(seqNext.xamlCode);
-            rlib::printfln("binOp end, result.isSeq={}, result.queueSize={}", result.prevOperationIsSequential, result.queued.size());
             return result;
         }
 
         void reduceQueuedIfNecessary(bool thisOperationIsSequential) {
-            rlib::printfln("reduce begin, PREVisSeq={}, thisIsSeq={}, queueSize={}", prevOperationIsSequential, thisOperationIsSequential, queued.size());
             if(thisOperationIsSequential == prevOperationIsSequential || queued.empty()) return;
             rlib::string resultXaml = prevOperationIsSequential ? templates::SEQ_BEGIN : templates::PAR_BEGIN;
             resultXaml += xamlCode;
             while(!queued.empty())
                 resultXaml += queued.front(), queued.pop();
             resultXaml += prevOperationIsSequential ? templates::SEQ_END : templates::PAR_END;
-            rlib::printfln("reduce end, PREVisSeq={}, queueSize={}, xaml dump:{}", prevOperationIsSequential, queued.size(), resultXaml);
             xamlCode = std::move(resultXaml);
         }
     };
@@ -121,11 +117,16 @@ namespace CIS {
         std::list<string> xtraAssemblies;
 
     private:
+        static auto doTransform(rlib::string template_, const std::list<string> &originBuf) {
+            std::list<string> resultBuf;
+            std::transform(originBuf.cbegin(), originBuf.cend(), std::back_inserter(resultBuf), [&](auto &item) {return template_.format(item);});
+            return resultBuf;
+        }
         auto generateXamlHead() const {
             rlib::string result = templates::STD_XAML_HEAD;
-            result.replace_once("__TEMPLATE_ARG_XtraShorthands", "\n  "_rs.join(xtraShorthands));
-            result.replace_once("__TEMPLATE_ARG_XtraNamespaces", "\n    "_rs.join(xtraNamespaces));
-            result.replace_once("__TEMPLATE_ARG_XtraAssemblies", "\n    "_rs.join(xtraAssemblies));
+            result.replace_once("__TEMPLATE_ARG_XtraShorthands", ""_rs.join(doTransform("  {}\n", xtraShorthands)));
+            result.replace_once("__TEMPLATE_ARG_XtraNamespaces", ""_rs.join(doTransform("    <x:String>{}</x:String>\n", xtraNamespaces)));
+            result.replace_once("__TEMPLATE_ARG_XtraAssemblies", ""_rs.join(doTransform("    <AssemblyReference>{}</AssemblyReference>\n", xtraAssemblies)));
             return result;
         }
         constexpr auto generateXamlTail() const {
