@@ -14,6 +14,6 @@ sudo make install
 
 ## Use
 
-1. Write your `Workflow.cc` with our lib. (Example: xaml.gen.example.cc) 
+1. Write your `Workflow.cc` with our lib. If you want some example, please read `xaml.gen.example.cc` and `workflows/*.cc`. **Make your code as simple as you can**. 
 
-2. Build and run `Workflow.cc`. You're all set. 
+2. Compile and run your `Workflow.cc`. You're all set. 
