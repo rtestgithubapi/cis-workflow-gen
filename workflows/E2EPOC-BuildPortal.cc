@@ -1,4 +1,3 @@
-#include <cis-workflow-gen/activity.hpp>
 #include <cis-workflow-gen/quick-include.hpp>
 
 int main() {
