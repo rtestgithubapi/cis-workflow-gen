@@ -1,7 +1,8 @@
 // #include <cis-workflow-gen/quick-include.hpp>
+#include "activity.hpp"
 #include "quick-include.hpp"
 
-int main() {
+auto simpleExample() {
     Activity SCS ("SCS", "FleetAGC.Activities.WriteTraceinfo", "PreRteg.InitiateBareMetalComplete");
     SCS.addInputSetting("Message", "Doing SCS");
     Activity SearchFarms ("Search Farms", "FleetAGC.Activities.WriteTraceinfo");
@@ -9,7 +10,42 @@ int main() {
     SearchFarms.addInputSetting("AnotherMessage", "shit");
 
     println(((SCS >> SearchFarms) | SCS).generateXaml());
-    println(to_file("out.xaml"), ((SCS >> SearchFarms) | SCS).generateXaml());
+}
+
+auto complexExample() {
+    auto className = "FleetAGC.Activities.WriteTraceinfo";
+    #define DEFINE_ACTIVITY(name, entityName) \
+        Activity name (#name, className, entityName); \
+        name.addInputSetting("Message", "Doing " #name);
+    
+    DEFINE_ACTIVITY(SCS, "PreRteg.InitiateBareMetalComplete")
+    DEFINE_ACTIVITY(SearchAnalytics, "")
+    DEFINE_ACTIVITY(SearchFarms , "")
+    DEFINE_ACTIVITY(ClassisSearchUX , "")
+    DEFINE_ACTIVITY(ModernSearch, "")
+    DEFINE_ACTIVITY(Loki, "PreRteg.InitiateBareMetalComplete")
+    DEFINE_ACTIVITY(Yggdrasil, "")
+    DEFINE_ACTIVITY(OfficeGraph, "")
+    DEFINE_ACTIVITY(IC3Tooling, "PreRteg.InitiateBareMetalComplete")
+    DEFINE_ACTIVITY(MonitoringSetup, "")
+    DEFINE_ACTIVITY(MicroServices, "")
+    DEFINE_ACTIVITY(DevelopmentValidation, "")
+    DEFINE_ACTIVITY(IntegrationTesting, "")
+    DEFINE_ACTIVITY(TSConfigAndInterop, "PreRteg.InitiateBareMetalComplete")
+
+    auto block1 = SCS >> (SearchAnalytics | (SearchFarms >> (ClassisSearchUX | ModernSearch)));
+    auto block3 = Loki >> Yggdrasil >> OfficeGraph;
+    auto block4 = IC3Tooling >> (MonitoringSetup | (MicroServices >> DevelopmentValidation >> IntegrationTesting));
+    auto completeFlow = block1 | TSConfigAndInterop | block3 | block4;
+
+    Metadata defaultMetadata;
+    defaultMetadata.xtraAssemblies = {"FleetAGC.Workflows"};
+    println(to_file("BuildTeams.xaml"), completeFlow.generateXaml());
+}
+
+int main() {
+    // simpleExample();
+    complexExample();
 }
 
 /*
@@ -18,7 +54,6 @@ auto block1 = SCS >> (SearchAnalytics | (SearchFarms >> (ClassisSearchUX | Moder
 auto block3 = Loki >> Yggdrasil >> OfficeGraph;
 auto block4 = IC3Tooling >> (MonitoringSetup | (MicroServices >> DevelopmentValidation >> IntegrationTesting))
 
-(block1 | 3SConfigAndInterop | block3 | block4).GenerateXaml("/home/recolic/code/Azure/myWorkflow.xaml");
 
 
 */
