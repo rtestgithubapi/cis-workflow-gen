@@ -14,8 +14,7 @@ R"XAMLTL(    <mwcwa:ControlledActivity ClassName="__TEMPLATE_ARG_ClassName" Disp
       <mwcwa:ControlledActivity.InputSettings>
         <InArgument x:TypeArguments="__TEMPLATE_ARG_TypeName">
           <mca:CSharpValue x:TypeArguments="__TEMPLATE_ARG_TypeName" xml:space="preserve">
-__TEMPLATE_ARG_TypeValue
-          </mca:CSharpValue>
+__TEMPLATE_ARG_TypeValue          </mca:CSharpValue>
         </InArgument>
       </mwcwa:ControlledActivity.InputSettings>
     </mwcwa:ControlledActivity>
