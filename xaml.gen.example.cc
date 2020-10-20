@@ -36,8 +36,7 @@ auto complexExample() {
     auto block4 = IC3Tooling >> (MonitoringSetup | (MicroServices >> DevelopmentValidation >> IntegrationTesting));
     auto completeFlow = block1 | TSConfigAndInterop | block3 | block4;
 
-    Metadata defaultMetadata;
-    defaultMetadata.xtraAssemblies = {"FleetAGC.Workflows"};
+    auto myMetadata = DefaultMetadata().xtraAssemblies = {"FleetAGC.Workflows"};
     println(to_file("BuildTeams.xaml"), completeFlow.generateXaml());
 }
 

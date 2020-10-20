@@ -1,3 +1,6 @@
+// This file is ONLY intended to be included in XAML-GEN source file!
+// DO NOT INCLUDE this file in any headers / libraries / production-ready-cxx code!
+
 #ifndef RLIB_IMPL_QUICK_INCLUDE_XAML_GEN_HPP
 #define RLIB_IMPL_QUICK_INCLUDE_XAML_GEN_HPP
 
@@ -14,7 +17,15 @@ inline auto &to_file(std::string filename) {
     if(!*outf) {
         throw std::invalid_argument("Failed to open file: " + filename);
     }
+    // Don't do this in production cxx code. 
     return *outf;
+}
+
+namespace CIS {
+inline auto &DefaultMetadata() {
+    // Don't do this in production cxx code. 
+    return *new Metadata();
+}
 }
 
 #endif

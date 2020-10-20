@@ -75,26 +75,31 @@ namespace CIS {
         auto generateXaml() const;
 
     private:
-        bool prevOperationIsSequential = false;
+        bool prevOperationIsSequential = true;
         rlib::string xamlCode;
         std::queue<rlib::string> queued;
 
-        Flow binaryOperation(const Flow &seqNext, bool thisOperationIsSequential) const {
+        Flow binaryOperation(Flow seqNext, bool thisOperationIsSequential) const {
+            rlib::printfln("binOp begin, isSeq={}, queueSize={}", thisOperationIsSequential, queued.size());
             Flow result = *this;
-            if(thisOperationIsSequential != prevOperationIsSequential && !queued.empty()) {
-                result.reduceQueued();
-            }
+            result.reduceQueuedIfNecessary(thisOperationIsSequential);
+            seqNext.reduceQueuedIfNecessary(thisOperationIsSequential);
+
             result.prevOperationIsSequential = thisOperationIsSequential;
             result.queued.push(seqNext.xamlCode);
+            rlib::printfln("binOp end, result.isSeq={}, result.queueSize={}", result.prevOperationIsSequential, result.queued.size());
             return result;
         }
 
-        void reduceQueued() {
+        void reduceQueuedIfNecessary(bool thisOperationIsSequential) {
+            rlib::printfln("reduce begin, PREVisSeq={}, thisIsSeq={}, queueSize={}", prevOperationIsSequential, thisOperationIsSequential, queued.size());
+            if(thisOperationIsSequential == prevOperationIsSequential || queued.empty()) return;
             rlib::string resultXaml = prevOperationIsSequential ? templates::SEQ_BEGIN : templates::PAR_BEGIN;
             resultXaml += xamlCode;
             while(!queued.empty())
                 resultXaml += queued.front(), queued.pop();
             resultXaml += prevOperationIsSequential ? templates::SEQ_END : templates::PAR_END;
+            rlib::printfln("reduce end, PREVisSeq={}, queueSize={}, xaml dump:{}", prevOperationIsSequential, queued.size(), resultXaml);
             xamlCode = std::move(resultXaml);
         }
     };
@@ -103,11 +108,14 @@ namespace CIS {
         return Flow(*this) >> seqNext;
     }
     inline Flow Activity::operator|(const Flow &seqNext) const {
-        return Flow(*this) >> seqNext;
+        return Flow(*this) | seqNext;
     }
 
     struct Metadata {
         friend Flow;
+        auto &setXtraShorthands(std::list<string> &&xtraShorthands) {this->xtraShorthands = std::move(xtraShorthands); return *this;}
+        auto &setXtraNamespaces(std::list<string> &&xtraNamespaces) {this->xtraNamespaces = std::move(xtraNamespaces); return *this;}
+        auto &setXtraAssemblies(std::list<string> &&xtraAssemblies) {this->xtraAssemblies = std::move(xtraAssemblies); return *this;}
         std::list<string> xtraShorthands;
         std::list<string> xtraNamespaces;
         std::list<string> xtraAssemblies;
@@ -127,8 +135,7 @@ namespace CIS {
 
     inline auto Flow::generateXaml(Metadata metadata) const {
         Flow finalized(*this);
-        if(!finalized.queued.empty())
-            finalized.reduceQueued();
+        finalized.reduceQueuedIfNecessary(!finalized.prevOperationIsSequential); // Always necessary if queue is not empty.
         return metadata.generateXamlHead() + finalized.xamlCode + metadata.generateXamlTail();
     }
     inline auto Flow::generateXaml() const {
