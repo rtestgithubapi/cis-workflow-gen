@@ -9,6 +9,7 @@ int main() {
     SearchFarms.addInputSetting("AnotherMessage", "shit");
 
     println(((SCS >> SearchFarms) | SCS).generateXaml());
+    println(to_file("out.xaml"), ((SCS >> SearchFarms) | SCS).generateXaml());
 }
 
 /*

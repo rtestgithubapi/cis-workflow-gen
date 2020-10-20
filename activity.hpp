@@ -2,6 +2,7 @@
 #define CIS_WORKFLOW_GEN_ACTIVITY_HPP
 
 #include <iterator>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <list>
@@ -18,6 +19,7 @@ namespace CIS {
     using std::string;
     using namespace rlib::literals;
     class Flow;
+    class Metadata;
 
     class Activity {
     public:
@@ -30,6 +32,9 @@ namespace CIS {
         void addInputSetting(string k, string v) {
             inputSettings[k] = v;
         }
+        void addRawActivityArgument(string xamlTypeString, string csharpValueCode) {
+            throw std::invalid_argument("Not implemented yet.");
+        }
     private:
         string displayName, className, entityName;
         string taskId;
@@ -40,18 +45,18 @@ namespace CIS {
     public:
         Flow(const Activity &activity) {
             xamlCode = templates::ACTIVITY_XAML_TEMPLATE;
-            xamlCode.replace("__TEMPLATE_ARG_ClassName", activity.className);
-            xamlCode.replace("__TEMPLATE_ARG_DisplayName", activity.displayName);
-            xamlCode.replace("__TEMPLATE_ARG_TaskId", activity.taskId);
+            xamlCode.replace_once("__TEMPLATE_ARG_ClassName", activity.className);
+            xamlCode.replace_once("__TEMPLATE_ARG_DisplayName", activity.displayName);
+            xamlCode.replace_once("__TEMPLATE_ARG_TaskId", activity.taskId);
             auto entityXaml = activity.entityName == "" ? "" : rlib::string(templates::ENTITY_DEF_TEMPLATE).replace("__TEMPLATE_ARG_EntityName", activity.entityName);
-            xamlCode.replace("__TEMPLATE_ARG_EntityDefPlaceholder", entityXaml);
+            xamlCode.replace_once("__TEMPLATE_ARG_EntityDefPlaceholder", entityXaml);
 
             std::list<string> inputSettingStrings;
             std::transform(activity.inputSettings.begin(), activity.inputSettings.end(), std::back_inserter(inputSettingStrings), [](auto &&kv) {
                 return "{\"{}\", \"{}\"}"_rs.format(kv.first, kv.second);
             });
             auto inputSettingsString = ",\n            "_rs.join(inputSettingStrings);
-            xamlCode.replace("__TEMPLATE_ARG_DictLines", inputSettingsString);
+            xamlCode.replace_once("__TEMPLATE_ARG_DictLines", inputSettingsString);
         }
         Flow(rlib::string xamlCode) : xamlCode(xamlCode) {}
         Flow(const Flow &another) : queued(another.queued), xamlCode(another.xamlCode), prevOperationIsSequential(another.prevOperationIsSequential) {}
@@ -66,12 +71,8 @@ namespace CIS {
             return binaryOperation(seqNext, false);
         }
 
-        rlib::string generateXaml() const {
-            Flow finalized(*this);
-            if(!finalized.queued.empty())
-                finalized.reduceQueued();
-            return finalized.xamlCode;
-        }
+        auto generateXaml(Metadata metadata) const;
+        auto generateXaml() const;
 
     private:
         bool prevOperationIsSequential = false;
@@ -105,10 +106,35 @@ namespace CIS {
         return Flow(*this) >> seqNext;
     }
 
-    struct Workflow {
-        std::list<string> assemblyReferences;
+    struct Metadata {
+        friend Flow;
+        std::list<string> xtraShorthands;
+        std::list<string> xtraNamespaces;
+        std::list<string> xtraAssemblies;
 
+    private:
+        auto generateXamlHead() const {
+            rlib::string result = templates::STD_XAML_HEAD;
+            result.replace_once("__TEMPLATE_ARG_XtraShorthands", "\n  "_rs.join(xtraShorthands));
+            result.replace_once("__TEMPLATE_ARG_XtraNamespaces", "\n    "_rs.join(xtraNamespaces));
+            result.replace_once("__TEMPLATE_ARG_XtraAssemblies", "\n    "_rs.join(xtraAssemblies));
+            return result;
+        }
+        constexpr auto generateXamlTail() const {
+            return templates::STD_XAML_TAIL;
+        }
     };
+
+    inline auto Flow::generateXaml(Metadata metadata) const {
+        Flow finalized(*this);
+        if(!finalized.queued.empty())
+            finalized.reduceQueued();
+        return metadata.generateXamlHead() + finalized.xamlCode + metadata.generateXamlTail();
+    }
+    inline auto Flow::generateXaml() const {
+        Metadata defaultMetadata;
+        return generateXaml(std::move(defaultMetadata));
+    }
 }
 
 
