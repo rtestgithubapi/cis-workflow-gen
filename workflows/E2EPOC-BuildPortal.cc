@@ -1,7 +1,6 @@
 #include <cis-workflow-gen/quick-include.hpp>
 
 int main() {
-
 #define DEFINE_ACTIVITY(name) \
     Activity name(#name, "FleetAGC.Activities.DelayActivity", "PortalAdminCenterUseageReports." #name)
 
