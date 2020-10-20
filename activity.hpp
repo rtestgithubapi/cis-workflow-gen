@@ -9,7 +9,7 @@
 #include <queue>
 #include <algorithm>
 
-#include "uuid.hpp"
+#include "utility.hpp"
 #include "xaml-template.hpp"
 #include <rlib/string.hpp>
 #include <rlib/require/cxx14>
@@ -24,39 +24,61 @@ namespace CIS {
     class Activity {
     public:
         friend Flow;
+        // All `Name` should not contain QuotationMark(")
         Activity(string displayName, string className, string entityName = "")
-            : displayName(displayName), className(className), entityName(entityName), taskId(GenUUID()) {}
+            : displayName(Utility::HtmlEscapeString(displayName)), className(className), entityName(entityName), taskId(Utility::GenUUID()) {}
         
         Flow operator>>(const Flow &seqNext) const;
         Flow operator|(const Flow &seqNext) const;
         void addInputSetting(string k, string v) {
             inputSettings[k] = v;
         }
-        void addRawActivityArgument(string xamlTypeString, string csharpValueCode) {
-            throw std::invalid_argument("Not implemented yet.");
+        void explicitSetRawArgument(string argTypeInXaml, string argValueInCSharp) {
+            throw std::runtime_error("NotSupported! Activity seems doesn't support custom type inputSettings at all. Refer to commit 7fd539d6d5f6b102337da9591217b781cb71ced9 if we get new info and want to support it again. ");
         }
     private:
         string displayName, className, entityName;
         string taskId;
         std::unordered_map<string, string> inputSettings;
+
+        auto inputSettingsToCodelines() const {
+            // Convert InputSettings Dictionary to C# code. 
+            std::list<string> inputSettingStrings;
+            std::transform(this->inputSettings.begin(), this->inputSettings.end(), std::back_inserter(inputSettingStrings), [](auto &&kv) {
+                return "            {\"{}\", \"{}\"}"_rs.format(kv.first, kv.second);
+            });
+            auto inputSettingsString = ",\n"_rs.join(inputSettingStrings);
+            return rlib::string(templates::ACTIVITY_DICT_TEMPLATE_UNESCAPED).replace_once("__TEMPLATE_ARG_DictLines", inputSettingsString);
+        }
+        auto generateXaml() const {
+            rlib::string xamlCode;
+
+            if(inputSettings.empty()) {
+                // Also no inputSettings. 
+                xamlCode = templates::ACTIVITY_XAML_TEMPLATE_WITHOUT_INPUTSETTINGS;
+            }
+            else {
+                // Generate inputSettings.
+                xamlCode = templates::ACTIVITY_XAML_TEMPLATE;
+                xamlCode.replace("__TEMPLATE_ARG_TypeName", templates::ACTIVITY_DICT_TYPENAME);
+                xamlCode.replace_once("__TEMPLATE_ARG_TypeValue", Utility::HtmlEscapeString(inputSettingsToCodelines()));
+            }
+
+            xamlCode.replace_once("__TEMPLATE_ARG_ClassName", this->className);
+            xamlCode.replace_once("__TEMPLATE_ARG_DisplayName", this->displayName);
+            xamlCode.replace_once("__TEMPLATE_ARG_TaskId", this->taskId);
+
+            auto entityXaml = this->entityName == "" ? "" : rlib::string(templates::ENTITY_DEF_TEMPLATE).replace("__TEMPLATE_ARG_EntityName", this->entityName);
+            xamlCode.replace_once("__TEMPLATE_ARG_EntityDefPlaceholder", entityXaml);
+
+            return xamlCode;
+        }
     };
 
     class Flow {
     public:
         Flow(const Activity &activity) {
-            xamlCode = templates::ACTIVITY_XAML_TEMPLATE;
-            xamlCode.replace_once("__TEMPLATE_ARG_ClassName", activity.className);
-            xamlCode.replace_once("__TEMPLATE_ARG_DisplayName", activity.displayName);
-            xamlCode.replace_once("__TEMPLATE_ARG_TaskId", activity.taskId);
-            auto entityXaml = activity.entityName == "" ? "" : rlib::string(templates::ENTITY_DEF_TEMPLATE).replace("__TEMPLATE_ARG_EntityName", activity.entityName);
-            xamlCode.replace_once("__TEMPLATE_ARG_EntityDefPlaceholder", entityXaml);
-
-            std::list<string> inputSettingStrings;
-            std::transform(activity.inputSettings.begin(), activity.inputSettings.end(), std::back_inserter(inputSettingStrings), [](auto &&kv) {
-                return "{\"{}\", \"{}\"}"_rs.format(kv.first, kv.second);
-            });
-            auto inputSettingsString = ",\n            "_rs.join(inputSettingStrings);
-            xamlCode.replace_once("__TEMPLATE_ARG_DictLines", inputSettingsString);
+            xamlCode = activity.generateXaml();
         }
         Flow(rlib::string xamlCode) : xamlCode(xamlCode) {}
         Flow(const Flow &another) : queued(another.queued), xamlCode(another.xamlCode), prevOperationIsSequential(another.prevOperationIsSequential) {}
