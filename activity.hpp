@@ -21,9 +21,14 @@ namespace CIS {
     class Flow;
     class Metadata;
 
-    class Activity {
-    public:
+    class ActivityBase {
+    private:
         friend Flow;
+        virtual rlib::string generateXaml() const = 0;
+    };
+
+    class Activity : private ActivityBase {
+    public:
         // All `Name` should not contain QuotationMark(")
         Activity(string displayName, string className, string entityName = "")
             : displayName(Utility::HtmlEscapeString(displayName)), className(className), entityName(entityName), taskId(Utility::GenUUID()) {}
@@ -50,7 +55,7 @@ namespace CIS {
             auto inputSettingsString = ",\n"_rs.join(inputSettingStrings);
             return rlib::string(templates::ACTIVITY_DICT_TEMPLATE_UNESCAPED).replace_once("__TEMPLATE_ARG_DictLines", inputSettingsString);
         }
-        auto generateXaml() const {
+        virtual rlib::string generateXaml() const {
             rlib::string xamlCode;
 
             if(inputSettings.empty()) {
@@ -75,9 +80,13 @@ namespace CIS {
         }
     };
 
+    class ManualOperation : private ActivityBase {
+
+    };
+
     class Flow {
     public:
-        Flow(const Activity &activity) {
+        Flow(const ActivityBase &activity) {
             xamlCode = activity.generateXaml();
         }
         Flow(rlib::string xamlCode) : xamlCode(xamlCode) {}
