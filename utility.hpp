@@ -3,8 +3,12 @@
 
 #include <random>
 #include <string>
+#include <rlib/string.hpp>
 
-inline static std::string GenUUID() {
+namespace Utility {
+
+
+inline static auto GenUUID() {
     static std::random_device dev;
     static std::mt19937 rng(dev());
 
@@ -20,6 +24,12 @@ inline static std::string GenUUID() {
         res += v[dist(rng)];
     }
     return res;
+}
+
+inline static auto HtmlEscapeString(rlib::string s) {
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+}
+
 }
 
 #endif

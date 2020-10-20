@@ -31,10 +31,14 @@ auto complexExample() {
     DEFINE_ACTIVITY(IntegrationTesting, "")
     DEFINE_ACTIVITY(TSConfigAndInterop, "PreRteg.InitiateBareMetalComplete")
 
+    // All Names of activity should not contain quotation mark (")
+    Activity OneMoreMagicActivity("MyName Contains Symbols: {(<&>)}", "FleetAGC.Workflow.Magic");
+    OneMoreMagicActivity.explicitSetRawArgument("x:Boolean", "(0b_1100_1000 | 0b_1000_0001 == 201)");
+
     auto block1 = SCS >> (SearchAnalytics | (SearchFarms >> (ClassisSearchUX | ModernSearch)));
     auto block3 = Loki >> Yggdrasil >> OfficeGraph;
     auto block4 = IC3Tooling >> (MonitoringSetup | (MicroServices >> DevelopmentValidation >> IntegrationTesting));
-    auto completeFlow = block1 | TSConfigAndInterop | block3 | block4;
+    auto completeFlow = (block1 | TSConfigAndInterop | block3 | block4) >> OneMoreMagicActivity;
 
     auto myMetadata = Metadata("FleetAGC.Workflows.BuildTeams").setXtraAssemblies({"FleetAGC.Workflows"});
     println(to_file("BuildTeams.xaml"), completeFlow.generateXaml(myMetadata));

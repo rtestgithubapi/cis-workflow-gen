@@ -12,16 +12,25 @@ namespace templates {
 constexpr auto ACTIVITY_XAML_TEMPLATE = 
 R"XAMLTL(    <mwcwa:ControlledActivity ClassName="__TEMPLATE_ARG_ClassName" DisplayName="__TEMPLATE_ARG_DisplayName" TaskId="__TEMPLATE_ARG_TaskId" __TEMPLATE_ARG_EntityDefPlaceholder>
       <mwcwa:ControlledActivity.InputSettings>
-        <InArgument x:TypeArguments="scg:Dictionary(x:String, x:String)">
-          <mca:CSharpValue x:TypeArguments="scg:Dictionary(x:String, x:String)" xml:space="preserve">
-          new Dictionary&lt;string, string&gt;()
-          {
-            __TEMPLATE_ARG_DictLines
-          }
+        <InArgument x:TypeArguments="__TEMPLATE_ARG_TypeName">
+          <mca:CSharpValue x:TypeArguments="__TEMPLATE_ARG_TypeName" xml:space="preserve">
+__TEMPLATE_ARG_TypeValue
           </mca:CSharpValue>
         </InArgument>
       </mwcwa:ControlledActivity.InputSettings>
     </mwcwa:ControlledActivity>
+)XAMLTL";
+constexpr auto ACTIVITY_XAML_TEMPLATE_WITHOUT_INPUTSETTINGS = 
+R"XAMLTL(    <mwcwa:ControlledActivity ClassName="__TEMPLATE_ARG_ClassName" DisplayName="__TEMPLATE_ARG_DisplayName" TaskId="__TEMPLATE_ARG_TaskId" InputSettings="{x:Null}" __TEMPLATE_ARG_EntityDefPlaceholder>
+    </mwcwa:ControlledActivity>
+)XAMLTL";
+
+constexpr auto ACTIVITY_DICT_TYPENAME = "scg:Dictionary(x:String, x:String)";
+constexpr auto ACTIVITY_DICT_TEMPLATE_UNESCAPED = 
+R"XAMLTL(          new Dictionary<string, string>()
+          {
+__TEMPLATE_ARG_DictLines
+          }
 )XAMLTL";
 
 constexpr auto ENTITY_DEF_TEMPLATE = R"(coordination:DependencyBinder.EntityName="__TEMPLATE_ARG_EntityName")";
