@@ -7,7 +7,7 @@ auto simpleExample() {
     SearchFarms.addInputSetting("Message", "fuck");
     SearchFarms.addInputSetting("AnotherMessage", "shit");
 
-    println(((SCS >> SearchFarms) | SCS).generateXaml());
+    println(((SCS >> SearchFarms) | SCS).generateXaml("FleetAGC.Workflows.SimpleExample"));
 }
 
 auto complexExample() {
@@ -36,7 +36,7 @@ auto complexExample() {
     auto block4 = IC3Tooling >> (MonitoringSetup | (MicroServices >> DevelopmentValidation >> IntegrationTesting));
     auto completeFlow = block1 | TSConfigAndInterop | block3 | block4;
 
-    auto myMetadata = DefaultMetadata().setXtraAssemblies({"FleetAGC.Workflows"});
+    auto myMetadata = Metadata("FleetAGC.Workflows.BuildTeams").setXtraAssemblies({"FleetAGC.Workflows"});
     println(to_file("BuildTeams.xaml"), completeFlow.generateXaml(myMetadata));
 }
 
@@ -44,13 +44,3 @@ int main() {
     // simpleExample();
     complexExample();
 }
-
-/*
-// `>>` means sequence, and `|` means parallel. 
-auto block1 = SCS >> (SearchAnalytics | (SearchFarms >> (ClassisSearchUX | ModernSearch)));
-auto block3 = Loki >> Yggdrasil >> OfficeGraph;
-auto block4 = IC3Tooling >> (MonitoringSetup | (MicroServices >> DevelopmentValidation >> IntegrationTesting))
-
-
-
-*/

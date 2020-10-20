@@ -71,8 +71,8 @@ namespace CIS {
             return binaryOperation(seqNext, false);
         }
 
-        auto generateXaml(Metadata metadata) const;
-        auto generateXaml() const;
+        auto generateXaml(Metadata) const;
+        auto generateXaml(std::string className) const;
 
     private:
         bool prevOperationIsSequential = true;
@@ -115,6 +115,9 @@ namespace CIS {
         std::list<string> xtraShorthands;
         std::list<string> xtraNamespaces;
         std::list<string> xtraAssemblies;
+        string className;
+        Metadata(string className) : className(className) {}
+        Metadata() = delete;
 
     private:
         static auto doTransform(rlib::string template_, const std::list<string> &originBuf) {
@@ -127,6 +130,7 @@ namespace CIS {
             result.replace_once("__TEMPLATE_ARG_XtraShorthands", ""_rs.join(doTransform("  {}\n", xtraShorthands)));
             result.replace_once("__TEMPLATE_ARG_XtraNamespaces", ""_rs.join(doTransform("    <x:String>{}</x:String>\n", xtraNamespaces)));
             result.replace_once("__TEMPLATE_ARG_XtraAssemblies", ""_rs.join(doTransform("    <AssemblyReference>{}</AssemblyReference>\n", xtraAssemblies)));
+            result.replace_once("__TEMPLATE_ARG_WorkflowClassName", className);
             return result;
         }
         constexpr auto generateXamlTail() const {
@@ -139,8 +143,8 @@ namespace CIS {
         finalized.reduceQueuedIfNecessary(!finalized.prevOperationIsSequential); // Always necessary if queue is not empty.
         return metadata.generateXamlHead() + finalized.xamlCode + metadata.generateXamlTail();
     }
-    inline auto Flow::generateXaml() const {
-        Metadata defaultMetadata;
+    inline auto Flow::generateXaml(std::string className) const {
+        Metadata defaultMetadata(className);
         return generateXaml(std::move(defaultMetadata));
     }
 }

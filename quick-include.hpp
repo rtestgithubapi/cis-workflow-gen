@@ -22,9 +22,9 @@ inline auto &to_file(std::string filename) {
 }
 
 namespace CIS {
-inline auto &DefaultMetadata() {
+inline auto &DefaultMetadata(std::string className) {
     // Don't do this in production cxx code. 
-    return *new Metadata();
+    return *new Metadata(className);
 }
 }
 

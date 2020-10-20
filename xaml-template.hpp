@@ -46,7 +46,7 @@ constexpr auto STD_XAML_HEAD = R"XAML(<?xml version='1.0' encoding='utf-8' stand
   xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#"
-  x:Class="FleetAGC.Workflows.BuildDomainControllerWorkflow" 
+  x:Class="__TEMPLATE_ARG_WorkflowClassName" 
 __TEMPLATE_ARG_XtraShorthands  mc:Ignorable="sap sap2010 sads">
 <TextExpression.NamespacesForImplementation>
   <sco:Collection x:TypeArguments="x:String">
