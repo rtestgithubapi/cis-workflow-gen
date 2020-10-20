@@ -1,11 +1,17 @@
+#include "activity.hpp"
+#include "quick-include.hpp"
 
-// Define some handy c# types. 
-auto dict = 'System.Collections.Generic.Dictionary<string, string>';
+int main() {
+    Activity SCS ("SCS", "FleetAGC.Activities.WriteTraceinfo", "PreRteg.InitiateBareMetalComplete");
+    SCS.addInputSetting("Message", "Doing SCS");
+    Activity SearchFarms ("Search Farms", "FleetAGC.Activities.WriteTraceinfo");
+    SearchFarms.addInputSetting("Message", "fuck");
+    SearchFarms.addInputSetting("AnotherMessage", "shit");
 
-// Define activities. 
-Activity SCS (ClassName='...', EntityName='...');
-// SCS.AddRawArgument(Type=dict, CSharpCode='new Dictionary() {{"Message", "Doing SCS"}}');
-SCS.AddInputSetting("Message", "Doing SCS");
+    rlib::println(((SCS >> SearchFarms) | SCS).generateXaml());
+}
+
+/*
 Activity SearchAnalytics (......);
 SearchAnalytics.AddArgument(......);
 ......;
@@ -19,3 +25,4 @@ auto block4 = IC3Tooling -> (MonitoringSetup | (MicroServices -> DevelopmentVali
 (block1 | 3SConfigAndInterop | block3 | block4).GenerateXaml("/home/recolic/code/Azure/myWorkflow.xaml");
 
 
+*/

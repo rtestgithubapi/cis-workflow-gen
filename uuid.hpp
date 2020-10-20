@@ -4,7 +4,7 @@
 #include <random>
 #include <string>
 
-inline static string GenUUID() {
+inline static std::string GenUUID() {
     static std::random_device dev;
     static std::mt19937 rng(dev());
 
