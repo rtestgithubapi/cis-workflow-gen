@@ -13,6 +13,6 @@ int main() {
     DEFINE_ACTIVITY(SvcHealthDashboard);
     DEFINE_ACTIVITY(CustomerLockboxUX);
 
-    auto flow = AdminCenterApp | OfficeHome | ShellServices | PortalUseageReports | PortalUseageReports | SvcHealthDashboard | CustomerLockboxUX;
+    auto flow = AdminCenterApp | OfficeHome | ShellServices | PortalUseageReports | SvcHealthDashboard | CustomerLockboxUX;
     println(to_file("BuildPortal.xaml"), flow.generateXaml("FleetAGC.Workflows.BuildPortal"));
 }
