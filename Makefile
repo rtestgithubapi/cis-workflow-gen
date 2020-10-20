@@ -6,4 +6,6 @@ test:
 install:
 	cp -r . /usr/include/cis-workflow-gen
 
+clean:
+	rm -f xaml.gen.example.out
 
