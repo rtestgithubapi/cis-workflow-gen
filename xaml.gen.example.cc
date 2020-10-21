@@ -12,6 +12,8 @@ auto simpleExample() {
 }
 
 auto complexExample() {
+    // This complexExample is un-necessarily complex, just to demonstrate ALL features of my library. 
+    // DO NOT copy-paste code from here. It's un-necessarily complex! Please copy-paste from simpleExample or workflows/*.cc
     auto className = "FleetAGC.Activities.WriteTraceinfo";
     #define DEFINE_ACTIVITY(name, entityName) \
         Activity name (#name, className, entityName); \
