@@ -1,3 +1,4 @@
+#include "activity.hpp"
 #include <cis-workflow-gen/quick-include.hpp>
 
 auto simpleExample() {
@@ -37,7 +38,7 @@ auto complexExample() {
     auto block1 = SCS >> (SearchAnalytics | (SearchFarms >> (ClassisSearchUX | ModernSearch)));
     auto block3 = Loki >> Yggdrasil >> OfficeGraph;
     auto block4 = IC3Tooling >> (MonitoringSetup | (MicroServices >> DevelopmentValidation >> IntegrationTesting));
-    auto completeFlow = (block1 | TSConfigAndInterop | block3 | block4) >> OneMoreMagicActivity;
+    auto completeFlow = (block1 | TSConfigAndInterop | block3 | block4) >> OneMoreMagicActivity >> ManualOperation("Manual Op Test", "Message") >> ManualOperation("AnotherManual", "", "PreRteg.TestEntity").explicitSetMessageInCSharp("123.ToString()");
 
     auto myMetadata = Metadata("FleetAGC.Workflows.BuildTeams").setXtraAssemblies({"FleetAGC.Workflows"});
     println(to_file("BuildTeams.xaml"), completeFlow.generateXaml(myMetadata));

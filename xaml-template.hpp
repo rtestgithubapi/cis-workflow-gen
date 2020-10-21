@@ -96,7 +96,7 @@ constexpr auto STD_XAML_TAIL = "</Activity>";
 
 
 constexpr auto MANUAL_OPERATION_XAML = 
-R"XAML(    <mwcwa:ManualOperation DeprecatedTaskId="{x:Null}" TaskId="{x:Null}" DisplayName="__TEMPLATE_ARG_DisplayName" MonitoringSystems="icm" WaitUntilFinish="True">
+R"XAML(    <mwcwa:ManualOperation DeprecatedTaskId="{x:Null}" TaskId="{x:Null}" DisplayName="__TEMPLATE_ARG_DisplayName" MonitoringSystems="icm" WaitUntilFinish="True" __TEMPLATE_ARG_EntityDefPlaceholder>
       <mwcwa:ManualOperation.AdditionalContent>
         <InArgument x:TypeArguments="x:String">
           <mca:CSharpValue x:TypeArguments="x:String">__TEMPLATE_ARG_CodeLines</mca:CSharpValue>

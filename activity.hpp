@@ -25,16 +25,17 @@ namespace CIS {
     private:
         friend Flow;
         virtual rlib::string generateXaml() const = 0;
+    public:
+        Flow operator>>(const Flow &seqNext) const;
+        Flow operator|(const Flow &seqNext) const;
     };
 
-    class Activity : private ActivityBase {
+    class Activity : public ActivityBase {
     public:
         // All `Name` should not contain QuotationMark(")
         Activity(string displayName, string className, string entityName = "")
             : displayName(Utility::HtmlEscapeString(displayName)), className(className), entityName(entityName), taskId(Utility::GenUUID()) {}
         
-        Flow operator>>(const Flow &seqNext) const;
-        Flow operator|(const Flow &seqNext) const;
         void addInputSetting(string k, string v) {
             inputSettings[k] = v;
         }
@@ -55,7 +56,7 @@ namespace CIS {
             auto inputSettingsString = ",\n"_rs.join(inputSettingStrings);
             return rlib::string(templates::ACTIVITY_DICT_TEMPLATE_UNESCAPED).replace_once("__TEMPLATE_ARG_DictLines", inputSettingsString);
         }
-        virtual rlib::string generateXaml() const {
+        virtual rlib::string generateXaml() const override {
             rlib::string xamlCode;
 
             if(inputSettings.empty()) {
@@ -80,7 +81,27 @@ namespace CIS {
         }
     };
 
-    class ManualOperation : private ActivityBase {
+    class ManualOperation : public ActivityBase {
+    public:
+        explicit ManualOperation(string displayName, string message = "", string entityName = "")
+            : displayName(Utility::HtmlEscapeString(displayName)), messageInCSharp(Utility::HtmlEscapeString("\"" + message + "\"")), entityName(entityName) {}
+        
+        ManualOperation &explicitSetMessageInCSharp(string messageInCSharp) {
+            this->messageInCSharp = messageInCSharp;
+            return *this;
+        }
+
+    private:
+        string displayName, messageInCSharp, entityName;
+        virtual rlib::string generateXaml() const override {
+            rlib::string xamlCode = templates::MANUAL_OPERATION_XAML;
+            xamlCode.replace_once("__TEMPLATE_ARG_DisplayName", displayName);
+            xamlCode.replace_once("__TEMPLATE_ARG_CodeLines", messageInCSharp);
+
+            auto entityXaml = this->entityName == "" ? "" : rlib::string(templates::ENTITY_DEF_TEMPLATE).replace("__TEMPLATE_ARG_EntityName", this->entityName);
+            xamlCode.replace_once("__TEMPLATE_ARG_EntityDefPlaceholder", entityXaml);
+            return xamlCode;
+        }
 
     };
 
@@ -89,7 +110,7 @@ namespace CIS {
         Flow(const ActivityBase &activity) {
             xamlCode = activity.generateXaml();
         }
-        Flow(rlib::string xamlCode) : xamlCode(xamlCode) {}
+        explicit Flow(rlib::string xamlCode) : xamlCode(xamlCode) {}
         Flow(const Flow &another) : queued(another.queued), xamlCode(another.xamlCode), prevOperationIsSequential(another.prevOperationIsSequential) {}
 
         // Actually modify xamlCode on "OperationChange". 
@@ -131,10 +152,10 @@ namespace CIS {
         }
     };
 
-    inline Flow Activity::operator>>(const Flow &seqNext) const {
+    inline Flow ActivityBase::operator>>(const Flow &seqNext) const {
         return Flow(*this) >> seqNext;
     }
-    inline Flow Activity::operator|(const Flow &seqNext) const {
+    inline Flow ActivityBase::operator|(const Flow &seqNext) const {
         return Flow(*this) | seqNext;
     }
 
@@ -147,7 +168,7 @@ namespace CIS {
         std::list<string> xtraNamespaces;
         std::list<string> xtraAssemblies;
         string className;
-        Metadata(string className) : className(className) {}
+        explicit Metadata(string className) : className(className) {}
         Metadata() = delete;
 
     private:
