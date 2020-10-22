@@ -10,7 +10,7 @@ namespace templates {
 // Rule: Every end-of-line should contains a \n
 
 constexpr auto ACTIVITY_XAML_TEMPLATE = 
-R"XAMLTL(    <mwcwa:ControlledActivity ClassName="__TEMPLATE_ARG_ClassName" DisplayName="__TEMPLATE_ARG_DisplayName" TaskId="__TEMPLATE_ARG_TaskId" __TEMPLATE_ARG_EntityDefPlaceholder>
+R"XAMLTL(    <mwcwa:ControlledActivity ClassName="__TEMPLATE_ARG_ClassName" DisplayName="__TEMPLATE_ARG_DisplayName" TaskId="__TEMPLATE_ARG_TaskId"__TEMPLATE_ARG_EntityDefPlaceholder>
       <mwcwa:ControlledActivity.InputSettings>
         <InArgument x:TypeArguments="__TEMPLATE_ARG_TypeName">
           <mca:CSharpValue x:TypeArguments="__TEMPLATE_ARG_TypeName" xml:space="preserve">
@@ -20,7 +20,7 @@ __TEMPLATE_ARG_TypeValue          </mca:CSharpValue>
     </mwcwa:ControlledActivity>
 )XAMLTL";
 constexpr auto ACTIVITY_XAML_TEMPLATE_WITHOUT_INPUTSETTINGS = 
-R"XAMLTL(    <mwcwa:ControlledActivity ClassName="__TEMPLATE_ARG_ClassName" DisplayName="__TEMPLATE_ARG_DisplayName" TaskId="__TEMPLATE_ARG_TaskId" InputSettings="{x:Null}" __TEMPLATE_ARG_EntityDefPlaceholder>
+R"XAMLTL(    <mwcwa:ControlledActivity ClassName="__TEMPLATE_ARG_ClassName" DisplayName="__TEMPLATE_ARG_DisplayName" TaskId="__TEMPLATE_ARG_TaskId" InputSettings="{x:Null}"__TEMPLATE_ARG_EntityDefPlaceholder>
     </mwcwa:ControlledActivity>
 )XAMLTL";
 
@@ -33,7 +33,7 @@ __TEMPLATE_ARG_DictLines
           }
 )XAMLTL";
 
-constexpr auto ENTITY_DEF_TEMPLATE = R"(coordination:DependencyBinder.EntityName="__TEMPLATE_ARG_EntityName")";
+constexpr auto ENTITY_DEF_TEMPLATE = R"( coordination:DependencyBinder.EntityName="__TEMPLATE_ARG_EntityName")";
 
 constexpr auto SEQ_BEGIN = R"(  <mwcwa:ControlledSequence IsHiddenFromOperator="False">)" "\n";
 constexpr auto SEQ_END   = R"(  </mwcwa:ControlledSequence>)" "\n";
