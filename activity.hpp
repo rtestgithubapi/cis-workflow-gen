@@ -111,7 +111,7 @@ namespace CIS {
             xamlCode = activity.generateXaml();
         }
         explicit Flow(rlib::string xamlCode) : xamlCode(xamlCode) {}
-        Flow(const Flow &another) : queued(another.queued), xamlCode(another.xamlCode), prevOperationIsSequential(another.prevOperationIsSequential) {}
+        Flow(const Flow &another) : queuedOnRight(another.queuedOnRight), xamlCode(another.xamlCode), prevOperationIsSequential(another.prevOperationIsSequential) {}
 
         // Actually modify xamlCode on "OperationChange". 
         // for example, A >> B >> C >> D | E. ABCD should be merged into one sequential operation. 
@@ -129,7 +129,9 @@ namespace CIS {
     private:
         bool prevOperationIsSequential = true;
         rlib::string xamlCode;
-        std::queue<rlib::string> queued;
+
+        // For a long expression A >> B >> C >> D, A is in xamlCode, and [B,C,D] are cached in queuedOnRight to wait for merge. 
+        std::list<rlib::string> queuedOnRight;
 
         Flow binaryOperation(Flow seqNext, bool thisOperationIsSequential) const {
             Flow result = *this;
@@ -137,18 +139,25 @@ namespace CIS {
             seqNext.reduceQueuedIfNecessary(thisOperationIsSequential);
 
             result.prevOperationIsSequential = thisOperationIsSequential;
-            result.queued.push(seqNext.xamlCode);
+
+            result.queuedOnRight.emplace_back(seqNext.xamlCode);
+            for(auto &&item : seqNext.queuedOnRight)
+                result.queuedOnRight.emplace_back(item);
             return result;
         }
 
         void reduceQueuedIfNecessary(bool thisOperationIsSequential) {
-            if(thisOperationIsSequential == prevOperationIsSequential || queued.empty()) return;
+            if(thisOperationIsSequential == prevOperationIsSequential || queuedOnRight.empty()) return;
             rlib::string resultXaml = prevOperationIsSequential ? templates::SEQ_BEGIN : templates::PAR_BEGIN;
+
             resultXaml += xamlCode;
-            while(!queued.empty())
-                resultXaml += queued.front(), queued.pop();
+            for(auto &&item : queuedOnRight)
+                resultXaml += item;
+
             resultXaml += prevOperationIsSequential ? templates::SEQ_END : templates::PAR_END;
+
             xamlCode = std::move(resultXaml);
+            queuedOnRight.clear();
         }
     };
 

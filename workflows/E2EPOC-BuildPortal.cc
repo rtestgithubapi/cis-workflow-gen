@@ -12,5 +12,5 @@ int main() {
     DEFINE_ACTIVITY(CustomerLockboxUX);
 
     auto flow = AdminCenterApp | OfficeHome | ShellServices | PortalUseageReports | SvcHealthDashboard | CustomerLockboxUX;
-    println(to_file("BuildPortal.xaml"), flow.generateXaml("FleetAGC.Workflows.BuildPortal"));
+    println(to_file("E2EPOCBuildPortalWorkflow.xaml"), flow.generateXaml("FleetAGC.Workflows.BuildPortal"));
 }
