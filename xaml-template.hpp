@@ -58,39 +58,39 @@ constexpr auto STD_XAML_HEAD = R"XAML(<?xml version='1.0' encoding='utf-8' stand
   sap2010:ExpressionActivityEditor.ExpressionActivityEditor="C#"
   x:Class="__TEMPLATE_ARG_WorkflowClassName" 
 __TEMPLATE_ARG_XtraShorthands  mc:Ignorable="sap sap2010 sads">
-<TextExpression.NamespacesForImplementation>
-  <sco:Collection x:TypeArguments="x:String">
-    <x:String>System</x:String>
-    <x:String>System.Collections.Generic</x:String>
-    <x:String>System.Data</x:String>
-    <x:String>System.Linq</x:String>
-    <x:String>System.Text</x:String>
+  <TextExpression.NamespacesForImplementation>
+    <sco:Collection x:TypeArguments="x:String">
+      <x:String>System</x:String>
+      <x:String>System.Collections.Generic</x:String>
+      <x:String>System.Data</x:String>
+      <x:String>System.Linq</x:String>
+      <x:String>System.Text</x:String>
 __TEMPLATE_ARG_XtraNamespaces  </sco:Collection>
-</TextExpression.NamespacesForImplementation>
-<TextExpression.ReferencesForImplementation>
-  <sco:Collection x:TypeArguments="AssemblyReference">
-    <AssemblyReference>Microsoft.CSharp</AssemblyReference>
-    <AssemblyReference>Microsoft.WindowsAzure.Bootstrap.Common</AssemblyReference>
-    <AssemblyReference>Microsoft.WindowsAzure.Bootstrap.ComponentBootstrap.Activities</AssemblyReference>
-    <AssemblyReference>Microsoft.WindowsAzure.Bootstrap.ComponentBootstrap.Contracts</AssemblyReference>
-    <AssemblyReference>Microsoft.WindowsAzure.Cis.Workflow.Activities</AssemblyReference>
-    <AssemblyReference>Microsoft.WindowsAzure.Cis.Workflow.Activities.Design</AssemblyReference>
-    <AssemblyReference>Microsoft.WindowsAzure.Cis.Workflow.Common</AssemblyReference>
-    <AssemblyReference>Microsoft.WindowsAzure.Cis.Workflow.Contracts</AssemblyReference>
-    <AssemblyReference>System</AssemblyReference>
-    <AssemblyReference>System.Activities</AssemblyReference>
-    <AssemblyReference>System.Core</AssemblyReference>
-    <AssemblyReference>System.Data</AssemblyReference>
-    <AssemblyReference>System.Runtime.Serialization</AssemblyReference>
-    <AssemblyReference>System.ServiceModel</AssemblyReference>
-    <AssemblyReference>System.ServiceModel.Activities</AssemblyReference>
-    <AssemblyReference>System.Xaml</AssemblyReference>
-    <AssemblyReference>System.Xml</AssemblyReference>
-    <AssemblyReference>System.Xml.Linq</AssemblyReference>
-    <AssemblyReference>mscorlib</AssemblyReference>
-    <AssemblyReference>FleetAGC.Activities</AssemblyReference>
+  </TextExpression.NamespacesForImplementation>
+  <TextExpression.ReferencesForImplementation>
+    <sco:Collection x:TypeArguments="AssemblyReference">
+      <AssemblyReference>Microsoft.CSharp</AssemblyReference>
+      <AssemblyReference>Microsoft.WindowsAzure.Bootstrap.Common</AssemblyReference>
+      <AssemblyReference>Microsoft.WindowsAzure.Bootstrap.ComponentBootstrap.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.WindowsAzure.Bootstrap.ComponentBootstrap.Contracts</AssemblyReference>
+      <AssemblyReference>Microsoft.WindowsAzure.Cis.Workflow.Activities</AssemblyReference>
+      <AssemblyReference>Microsoft.WindowsAzure.Cis.Workflow.Activities.Design</AssemblyReference>
+      <AssemblyReference>Microsoft.WindowsAzure.Cis.Workflow.Common</AssemblyReference>
+      <AssemblyReference>Microsoft.WindowsAzure.Cis.Workflow.Contracts</AssemblyReference>
+      <AssemblyReference>System</AssemblyReference>
+      <AssemblyReference>System.Activities</AssemblyReference>
+      <AssemblyReference>System.Core</AssemblyReference>
+      <AssemblyReference>System.Data</AssemblyReference>
+      <AssemblyReference>System.Runtime.Serialization</AssemblyReference>
+      <AssemblyReference>System.ServiceModel</AssemblyReference>
+      <AssemblyReference>System.ServiceModel.Activities</AssemblyReference>
+      <AssemblyReference>System.Xaml</AssemblyReference>
+      <AssemblyReference>System.Xml</AssemblyReference>
+      <AssemblyReference>System.Xml.Linq</AssemblyReference>
+      <AssemblyReference>mscorlib</AssemblyReference>
+      <AssemblyReference>FleetAGC.Activities</AssemblyReference>
 __TEMPLATE_ARG_XtraAssemblies  </sco:Collection>
-</TextExpression.ReferencesForImplementation>
+  </TextExpression.ReferencesForImplementation>
 )XAML";
 constexpr auto STD_XAML_TAIL = "</Activity>";
 

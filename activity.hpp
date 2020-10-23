@@ -189,8 +189,8 @@ namespace CIS {
         auto generateXamlHead() const {
             rlib::string result = templates::STD_XAML_HEAD;
             result.replace_once("__TEMPLATE_ARG_XtraShorthands", ""_rs.join(doTransform("  {}\n", xtraShorthands)));
-            result.replace_once("__TEMPLATE_ARG_XtraNamespaces", ""_rs.join(doTransform("    <x:String>{}</x:String>\n", xtraNamespaces)));
-            result.replace_once("__TEMPLATE_ARG_XtraAssemblies", ""_rs.join(doTransform("    <AssemblyReference>{}</AssemblyReference>\n", xtraAssemblies)));
+            result.replace_once("__TEMPLATE_ARG_XtraNamespaces", ""_rs.join(doTransform("      <x:String>{}</x:String>\n", xtraNamespaces)));
+            result.replace_once("__TEMPLATE_ARG_XtraAssemblies", ""_rs.join(doTransform("      <AssemblyReference>{}</AssemblyReference>\n", xtraAssemblies)));
             result.replace_once("__TEMPLATE_ARG_WorkflowClassName", className);
             return result;
         }
